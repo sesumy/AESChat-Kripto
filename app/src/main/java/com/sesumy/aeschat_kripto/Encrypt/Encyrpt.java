@@ -1,58 +1,102 @@
 package com.sesumy.aeschat_kripto.Encrypt;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by sesumy on 9.12.2016.
  */
+
 public class Encyrpt {
-    private static final String KEY_ = "Merhaba";
-    static String  key_Binary(String key){
+    final static Charset UTF_8 = Charset.forName("UTF-8");
+
+
+    public  ArrayList<Integer> toBinary(String text){
+        String oneChar="";
+        String k=text;
+        String full="";
+        ArrayList<Integer> plainText_binary=new ArrayList<Integer>();
+        for (char c : k.toCharArray()){
+            oneChar=String.format("%08d", Integer.parseInt(Integer.toBinaryString((int) c)));
+            full+=oneChar;
+        }
+        for(int i=0;i<full.length();i++){
+            String s = ""+full.charAt(i);
+            int binary_one=Integer.parseInt(s);
+            plainText_binary.add(binary_one);
+
+        }
+        return plainText_binary;
+    }
+    public ArrayList<Integer> key_Binary(String key){
         String intString="";
         String key_toBinary="";
-        List<Integer> ascii = new ArrayList<> ();
-            dongu_bitir:
-            while(key_toBinary.length()<129){
-                for (char c : key.toCharArray()) {
-                    ascii.add((int) c);
-                    intString=String.format("%08d", Integer.parseInt(Integer.toBinaryString((int) c)));
-                    System.out.println(c);
-                    key_toBinary+=intString;
-                    if(key_toBinary.length()==128){
-                        System.out.println("128 bit tamamlandı");
-                        break dongu_bitir;
-                    }
+        outerloop:
+        //8 BİTLİK FORMA DÖNÜŞTÜRDÜK..
+        while(key_toBinary.length()<129){
+            for (char c : key.toCharArray()) {
+                intString=String.format("%08d", Integer.parseInt(Integer.toBinaryString((int) c)));
+                //Aldığımız karakteri binary'e dönüştürüp stringte birleştiriyoruz...
+                key_toBinary+=intString;
+                if(key_toBinary.length()==128){
+                    break outerloop;
                 }
             }
-            System.out.println(key_toBinary);
-            System.out.println(key_toBinary.length());
-            return intString;
         }
-    public String ECB_Encrypt(String Plain_Text){
-        // Electronic Codebook
-        // En temel block modudur. Plain-text, şifreleme algoritmasının istediği
-        // uzunluklarda ki bloklar halinde bölünerek doğrudan işleme alınmasıdır.
-        // Kolay hacklenebilir.
-        // Bu yöntemin dezavantajı aynı açık metinlerin şifrelendiğinde aynı kapalı metinlere dönüştürmesidir; bu yüzden
-        // mesajdaki örüntüleri belli eder. Başka bir deyişle mesaj gizliliği sağlanmayabilir ve
-        // kriprografik protokollerde kullanılması tavsiye olunmaz.
-        String intString="";
-        String  plainText_toBinary="";
-        List<Integer> ascii = new ArrayList<> ();
-        //128 bite ayırarak xor lama işlemi yapacağız...
-
-        for (char c : Plain_Text.toCharArray()) {
-            ascii.add((int) c);
-            intString=String.format("%08d", Integer.parseInt(Integer.toBinaryString((int) c)));
-            System.out.println(c);
-            plainText_toBinary+=intString;
+        //DİZİYE ÇEVİRDİK XORLAMA YAPARKEN KOLAYLAŞTIRACAK İŞİMİZİ
+        ArrayList<Integer> binary_array=new ArrayList<Integer>();
+        for(int i=0;i<key_toBinary.length();i++){
+            String s = ""+key_toBinary.charAt(i);
+            int binary_one=Integer.parseInt(s);
+            binary_array.add(binary_one);
         }
-        plainText_toBinary.length ();
 
-
-        return Plain_Text;
+        return binary_array;
     }
+    public String ECB_Hesaplama(String text){
+        Encyrpt kb=new Encyrpt ();
+        String KEY = "Merhaba";
+        ArrayList<Integer> key_list=kb.key_Binary(KEY);
+        ArrayList<Integer> plainText_Binary_Int =kb.toBinary(text);
+        ArrayList<Integer> cipher_Binary_text=new ArrayList<Integer>();
+
+        int b=0;
+        for(int a=0 ;a<plainText_Binary_Int.size();a++){
+            if(b<plainText_Binary_Int.size()){
+                int s=plainText_Binary_Int.get(a);
+                int n=key_list.get(b);
+                int l=n^s;
+                if(b==127){
+                    b=0;
+                }
+                b++;
+                cipher_Binary_text.add(l);
+            }
+        }
+        String cipher ="";
+        for(int ct = 0 ;ct<cipher_Binary_text.size(); ct++){
+            cipher += Integer.toString((cipher_Binary_text.get(ct)));
+        }
+        return cipher;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public String  CBC_Encrypt(String Plain_Text) {
         // Cipher Block Chaning-Elektronik Kod Defteri
         // CBC, ECB’nin problemine ( ECB’nin deterministik olması problemi )çok net bir çözüm getirmektedir.
@@ -88,17 +132,4 @@ public class Encyrpt {
 // aes-128-cfb1:
 // aes-128-cfb8:
 // aes-128-ecb:
-// aes-128-ofb
-// aes-192-cbc:
-// aes-192-cfb:
-// aes-192-cfb1:
-// aes-192-cfb8:
-// aes-192-ecb:
-// aes-192-ofb:
-// aes-256-cbc:
-// aes-256-cfb:
-// aes-256-cfb1:
-// aes-256-cfb8:
-// aes-256-ecb:
-
 }
