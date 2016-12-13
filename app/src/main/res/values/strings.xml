@@ -36,4 +36,6 @@
     <string name="text3">text</string>
     <string name="text4">text</string>
     <string name="textviewq">TextView</string>
+    <string name="ifrele">Şifrele</string>
+    <string name="sifrele">Şifrele</string>
 </resources>

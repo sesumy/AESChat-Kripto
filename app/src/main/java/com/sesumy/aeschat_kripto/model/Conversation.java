@@ -12,6 +12,7 @@ import java.util.Date;
 public class Conversation
 {
 
+
 	/** The Constant STATUS_SENDING. */
 	public static final int STATUS_SENDING = 0;
 
@@ -90,6 +91,7 @@ public class Conversation
 	 * @return true, if is sent
 	 */
 	public boolean isSent()
+
 	{
 		return UserList.user.getId().contentEquals(sender);
 	}

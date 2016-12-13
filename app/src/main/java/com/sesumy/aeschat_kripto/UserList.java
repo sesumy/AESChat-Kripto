@@ -3,6 +3,9 @@ package com.sesumy.aeschat_kripto;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -189,4 +192,23 @@ public class UserList extends CustomActivity
 		}
 
 	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.ecb:
+				return true;
+			case R.id.cbc:
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
 }

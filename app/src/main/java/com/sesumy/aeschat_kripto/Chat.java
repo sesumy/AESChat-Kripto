@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sesumy.aeschat_kripto.Encrypt.Encyrpt;
 import com.sesumy.aeschat_kripto.custom.CustomActivity;
 import com.sesumy.aeschat_kripto.model.ChatUser;
 import com.sesumy.aeschat_kripto.model.Conversation;
@@ -46,8 +47,7 @@ public class Chat extends CustomActivity {
     private EditText txt;
     private ChatUser buddy;
     private Date lastMsgDate;
-
-
+Encyrpt encyrpt=new Encyrpt ();
 
     /* (non-Javadoc)
      * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -56,7 +56,6 @@ public class Chat extends CustomActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat);
-
         convList = new ArrayList<Conversation>();
         ListView list = (ListView) findViewById(R.id.list);
         adp = new ChatAdapter();
@@ -119,7 +118,7 @@ public class Chat extends CustomActivity {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(txt.getWindowToken(), 0);
 
-        String s = txt.getText().toString();
+        String s = encyrpt.ECB_Hesaplama_Encript (txt.getText().toString());
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null) {
@@ -234,9 +233,9 @@ public class Chat extends CustomActivity {
             Conversation c = getItem(pos);
             System.out.println ("get View Başlıyorr");
             if (c.isSent())
-                v = getLayoutInflater().inflate(R.layout.chat_item_sent, null);
-            else
                 v = getLayoutInflater().inflate(R.layout.chat_item_rcv, null);
+            else
+                v = getLayoutInflater().inflate(R.layout.chat_item_sent, null);
 
             TextView lbl = (TextView) v.findViewById(R.id.lbl1);
             lbl.setText(DateUtils.getRelativeDateTimeString(Chat.this, c
@@ -244,7 +243,7 @@ public class Chat extends CustomActivity {
                     DateUtils.DAY_IN_MILLIS, 0));
 
             lbl = (TextView) v.findViewById(R.id.lbl2);
-            lbl.setText(c.getMsg());
+            lbl.setText(encyrpt.ECB_Hesaplama_Decyrpt (c.getMsg()));
 
             lbl = (TextView) v.findViewById(R.id.lbl3);
             if (c.isSent()) {
@@ -262,9 +261,7 @@ public class Chat extends CustomActivity {
 
             return v;
         }
-
     }
-
     /* (non-Javadoc)
      * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
      */
