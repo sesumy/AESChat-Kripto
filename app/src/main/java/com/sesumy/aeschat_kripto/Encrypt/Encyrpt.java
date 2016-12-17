@@ -11,7 +11,7 @@ public class Encyrpt implements Serializable {
     public Encyrpt(){
          super();
     }
-///    final  static Charset UTF_8 = Charset.forName ("UTF-8");
+  //  final  static Charset UTF_8 = Charset.forName ("UTF-8");
     public static String KEY = "Merhaba";
 
     public ArrayList<Integer> toBinary(String text) {

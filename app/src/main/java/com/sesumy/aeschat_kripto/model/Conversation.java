@@ -24,20 +24,10 @@ public class Conversation
 
 	/** The msg. */
 	private String msg;
-
-	/** The status. */
 	private int status = STATUS_SENT;
-
-	/** The date. */
 	private Date date;
-
-	/** The sender. */
 	private String sender;
-
-    /** The receiver */
     private String receiver;
-
-    /** The photo url. */
     private String photoUrl;
 
 
