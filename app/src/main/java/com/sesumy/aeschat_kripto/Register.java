@@ -14,9 +14,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sesumy.aeschat_kripto.custom.CustomActivity;
 import com.sesumy.aeschat_kripto.model.ChatUser;
+import com.sesumy.aeschat_kripto.model.Key;
 import com.sesumy.aeschat_kripto.utils.Utils;
 
 import java.util.ArrayList;
@@ -42,6 +44,9 @@ public class Register extends CustomActivity
 
     /** Register progress dialog */
     private ProgressDialog registerProgressDlg;
+   FirebaseDatabase fbData;
+    DatabaseReference dbRef;
+    String uid;
 
 	/* (non-Javadoc)
 	 * @see com.chatt.custom.CustomActivity#onCreate(android.os.Bundle)
@@ -51,7 +56,7 @@ public class Register extends CustomActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.register);
-
+        fbData=FirebaseDatabase.getInstance ();
 		setTouchNClick(R.id.btnReg);
 
 		pwd = (EditText) findViewById(R.id.pwd);
@@ -107,8 +112,11 @@ public class Register extends CustomActivity
                                 Logger.getLogger(Register.class.getName()).log(Level.ALL, "User profile updated.");
                                 // Construct the ChatUser
                                 UserList.user = new ChatUser (user.getUid(),displayName, email,true,defaultRoom);
+                                    uid=user.getEmail ();
                                 // Setup link to users database
                                 FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).setValue(UserList.user);
+                                //KEYLERİ DATABASE EKLEME
+                                keyEkle();
                                 startActivity(new Intent(Register.this, UserList.class));
                                 finish();
                             }
@@ -120,7 +128,15 @@ public class Register extends CustomActivity
             }
         });
 
+
         registerProgressDlg = ProgressDialog.show(this, null,
 				getString(R.string.alert_wait));
 	}
+    public void keyEkle(){
+        Key key=new Key ();
+        dbRef=fbData.getReference ("keys");
+        String k=dbRef.push ().getKey ();
+        DatabaseReference dbRefYeni=fbData.getReference ("keys/"+k);
+        dbRefYeni.setValue (new Key (uid,"Key1"));
+    }
 }
