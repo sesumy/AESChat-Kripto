@@ -64,7 +64,30 @@
             android:inputType="textPassword"
             tools:ignore="RtlHardcoded">
         </EditText>
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
+    <ImageView
+        android:layout_height="40dp"
+        android:background="@drawable/databasekeyicon"
+        android:layout_alignBottom="@+id/key"
+        android:layout_alignTop="@+id/key"
+        android:layout_width="50dp"
+        tools:ignore="ContentDescription"/>
+    <EditText
+        android:id="@+id/key"
+        style="@style/editext_graybg"
+        android:layout_width="wrap_content"
+        android:layout_height="58dp"
+        android:layout_marginBottom="@dimen/pad_20dp"
+        android:layout_marginTop="@dimen/pad_5dp"
+        android:hint="KEY"
+        android:inputType="numberPassword"
+        tools:ignore="HardcodedText,RtlHardcoded"
+        android:textAlignment="gravity">
+        </EditText>
+</RelativeLayout>
         <LinearLayout
             android:id="@+id/main"
             android:layout_width="wrap_content"

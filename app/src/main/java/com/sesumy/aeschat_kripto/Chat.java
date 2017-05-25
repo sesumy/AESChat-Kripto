@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,10 @@ public class Chat extends CustomActivity {
     private EditText txt;
     private ChatUser buddy;
     private Date lastMsgDate;
-Encyrpt encyrpt=new Encyrpt ();
+    FirebaseDatabase fbData;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    static String s;
+
 
     /* (non-Javadoc)
      * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -101,6 +105,7 @@ Encyrpt encyrpt=new Encyrpt ();
     public void onClick(View v) {
         super.onClick(v);
         if (v.getId() == R.id.btnSend) {
+
             sendMessage();
         }
 
@@ -118,14 +123,19 @@ Encyrpt encyrpt=new Encyrpt ();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(txt.getWindowToken(), 0);
 
-        String s = encyrpt.ECB_Hesaplama_Encript (txt.getText().toString());
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+         s =txt.getText().toString();
+
         if(user != null) {
+            s=Encyrpt.sifrele(UserList.usKey,s);
+            Log.e (s,toString ());
             final Conversation conversation = new Conversation(s, Calendar.getInstance().getTime(), user.getUid(), buddy.getId());
             System.out.println ("s: "+ s + "Calendar.getInstance().getTime():"+ Calendar.getInstance().getTime() +
                     " user.getUid():"+user.getUid() + "buddy.getId() :"+buddy.getId());
             System.out.println("--------------------------------------------------------------------------------------------------------------");
+            String f = buddy.getId ();
+            System.out.println(f);
+
             conversation.setStatus(Conversation.STATUS_SENDING);
             convList.add(conversation);
             final String key = FirebaseDatabase.getInstance()
@@ -231,7 +241,6 @@ Encyrpt encyrpt=new Encyrpt ();
         @Override
         public View getView(int pos, View v, ViewGroup arg2) {
             Conversation c = getItem(pos);
-            System.out.println ("get View Başlıyorr");
             if (c.isSent())
                 v = getLayoutInflater().inflate(R.layout.chat_item_rcv, null);
             else
@@ -243,7 +252,7 @@ Encyrpt encyrpt=new Encyrpt ();
                     DateUtils.DAY_IN_MILLIS, 0));
 
             lbl = (TextView) v.findViewById(R.id.lbl2);
-            lbl.setText(encyrpt.ECB_Hesaplama_Decyrpt (c.getMsg()));
+            lbl.setText(c.getMsg());
 
             lbl = (TextView) v.findViewById(R.id.lbl3);
             if (c.isSent()) {

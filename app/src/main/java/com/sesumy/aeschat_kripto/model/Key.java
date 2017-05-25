@@ -10,7 +10,7 @@ public class Key implements Serializable{
 
     public Key(){}
 
-    public Key(String keyUserid,String key) {
+    public Key(String keyUserid, String key) {
         this.keyUserid = keyUserid;
         this.key=key;
     }

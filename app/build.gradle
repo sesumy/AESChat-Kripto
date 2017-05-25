@@ -34,5 +34,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:10.0.1'
     compile 'com.google.android.gms:play-services:10.0.1'
 
+    compile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
 apply plugin: 'com.google.gms.google-services'

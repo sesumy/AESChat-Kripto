@@ -1,8 +1,10 @@
 package com.sesumy.aeschat_kripto;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,12 +25,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sesumy.aeschat_kripto.custom.CustomActivity;
 import com.sesumy.aeschat_kripto.model.ChatUser;
+import com.sesumy.aeschat_kripto.model.Key;
 import com.sesumy.aeschat_kripto.utils.Const;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * The Class UserList is the Activity class. It shows a list of all users of
@@ -36,16 +40,20 @@ import java.util.logging.Logger;
  */
 public class UserList extends CustomActivity
 {
-
+    static BigInteger usKey;
 	/** Users database reference */
 	DatabaseReference database;
+	BigInteger prime=new BigInteger("8690333381690951");
 	/** The Chat list. */
 	private ArrayList<ChatUser> uList;
 
+	FirebaseDatabase fbData;
 	/** The user. */
 	public static ChatUser user;
+    private BigInteger karsiKey = BigInteger.valueOf(0);
 
-	/* (non-Javadoc)
+
+    /* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -55,9 +63,8 @@ public class UserList extends CustomActivity
 		setContentView(R.layout.user_list);
 		// Get reference to the Firebase database
 		database  = FirebaseDatabase.getInstance().getReference();
-
+        fbData=FirebaseDatabase.getInstance ();
 		getActionBar().setDisplayHomeAsUpEnabled(false);
-
 		updateUserStatus(true);
 	}
 
@@ -122,12 +129,41 @@ public class UserList extends CustomActivity
                 list.setOnItemClickListener(new OnItemClickListener() {
 
                     @Override
-                    public void onItemClick(AdapterView<?> arg0,
-                                            View arg1, int pos, long arg3)
+                    public void onItemClick(AdapterView<?> arg0, View arg1, final int pos, long arg3)
                     {
-                        startActivity(new Intent(UserList.this,
-                                Chat.class).putExtra(
-                                Const.EXTRA_DATA,  uList.get(pos)));
+
+						DatabaseReference dbKullanıcıBulKeyAl=fbData.getReference ("keys");
+						dbKullanıcıBulKeyAl.addListenerForSingleValueEvent (new ValueEventListener ( ) {
+							@Override
+							public void onDataChange(DataSnapshot dataSnapshot) {
+								for (DataSnapshot gelenVeri:dataSnapshot.getChildren ()){
+									if(Objects.equals (uList.get (pos).getId ( ), gelenVeri.getValue (Key.class).keyUserid)){
+									Log.i (uList.get (pos).getId ( ),"Aldığımız Kullanıcı ");
+									//Kendi keyi ile işlem yapıyor.
+										String karsiTarafKey=gelenVeri.getValue (Key.class).key;
+										Log.i ("Diğer kişinin keyi", karsiTarafKey);
+										Log.i ("User Id", uList.get (pos).getId ( ));
+										 karsiKey=BigInteger.valueOf (Long.valueOf (karsiTarafKey));
+										SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+										int myKey = preferences.getInt ("userKey", -1);
+                                        usKey=  (karsiKey.pow(myKey)).mod (prime);
+                                        System.out.println ("Kullanılacak key "+ usKey);
+
+                                        //KENDİ A SI İLE ŞİFRELEYİP GÖNDERECEK DAHA SONRASINDA B İLE AÇACAK VE ŞİFREYİ BULACAK
+									}
+									System.out.print (gelenVeri.getValue (Key.class));
+
+								}
+							}
+
+							@Override
+							public void onCancelled(DatabaseError databaseError) {
+
+							}
+						});
+
+
+                        startActivity(new Intent(UserList.this, Chat.class).putExtra(Const.EXTRA_DATA,  uList.get(pos)));
                     }
                 });
             }
